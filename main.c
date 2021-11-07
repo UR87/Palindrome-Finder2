@@ -257,7 +257,7 @@ int main()
         {
             printf("\nThe longest palindrome or with most accuracy is:\n");
             for(int q=0;q<PARAM;q++)
-                if(maxP[q]!=-5)
+                if(maxP[q]!=BLANK)
                     printf("%d",maxP[q]);
                 printf("\n%.2f%% accuracy\n",maxPercentage);
         }
