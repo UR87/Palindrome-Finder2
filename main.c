@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #define PARAM 100000
 #define BLANK -5
+#define STATS 1
 
 void atoiChar(char entered[PARAM],int enteredNumerical[PARAM])
 {
@@ -96,11 +97,8 @@ void swValue(int num1[PARAM],int num2[PARAM])
 int arithemtics(int num1[PARAM],int num2[PARAM])
 {
     int len=0;
-    int ari=0;
-    int temp[PARAM];
 
-    for(int i=0;i<PARAM;i++)
-        temp[i]=0;
+
 
     for(int i=(PARAM-1);num1[i]>=0 && num1[i]<=9;i--)
         len++;
@@ -110,18 +108,25 @@ int arithemtics(int num1[PARAM],int num2[PARAM])
 
     for(int i=PARAM-1;i>=0;i--)
     {
-        ari=0;
-        if(num1[i]+num2[i]+temp[i]>9)
-            ari=1;
+        num1[i]=num1[i]+num2[i];
 
-        //printf("\n%d    %d+%d(+%d)=%d",i,num1[i],num2[i],temp[i],num1[i]+num2[i]+temp[i]);
-
-        if(ari==0/* && num1[i]!=BLANK*/)
-            num1[i]=num1[i]+num2[i]+temp[i];
-        else if(ari==1)
+        if(num1[i]>9)
         {
-            num1[i]=num1[i]+num2[i]-10+temp[i];
-            temp[i-1]=1;
+            num1[i]-=10;
+            if(num1[i-1]<0)
+            {
+                //printf(" %d->",num1[i-1]);
+                num1[i-1]=1;
+                num2[i-1]=0;
+                len++;
+                //printf("%d ",num1[i-1]);
+            }
+            else
+            {
+                //printf(" %d->",num1[i-1]);
+                num1[i-1]+=1;
+                //printf("%d ",num1[i-1]);
+            }
         }
 
     }
@@ -129,20 +134,16 @@ int arithemtics(int num1[PARAM],int num2[PARAM])
 
     for(int i=0;num1[i]<1;i++)
     {
-        if(num1[i]>-10)
-        {
-            num1[i]=1;
-            len++;
-        }
-        else if(num1[i]==-10)
-            num1[i]=BLANK;
+        num1[i]=BLANK;
     }
 
-   // printf("\n");
+/* printf("\n");
 
 
-   // for(int i=0;i<PARAM;i++)
-     //   printf("%d",num1[i]);
+    for(int i=0;i<PARAM;i++)
+    if(num1[i]!=-5)
+        printf("%d",num1[i]);*/
+
 
 
     return len;
@@ -155,6 +156,14 @@ int main()
     int num1[PARAM];
     int num2[PARAM];
     char g='1';
+    int len=0;
+    int sameness=0;
+    double percentage=0;
+    double maxPercentage=0;
+    int maxP[PARAM];
+
+    for(int i=0;i<PARAM;i++)
+        maxP[i]=BLANK;
 
     while(g=='1')
     {
@@ -172,10 +181,34 @@ int main()
         printf("How many repetitions do you want to search: ");
         scanf("%d",&repetitions);
 
+        clr();
+        for(int m=0;m<PARAM;m++)
+            if(num1[m]!=-5)
+            {
+                printf("%d",num1[m]);
+                len++;
+            }
+
+        for(int j=0;j<len/2;j++)
+            {
+                if(num1[PARAM-len+j]==num1[PARAM-1-j])
+                    sameness++;
+            }
+            if(sameness==len/2)
+            {
+                printf(" - YOUR ENTERED NUMBER IS ALREADY A PALINDROME\n");
+                paliCount++;
+            }
+            else
+                printf("\n");
+
+
+
         for(int i=0;i<repetitions;i++)
         {
-            int sameness=0;
-            int len=0;
+            sameness=0;
+            len=0;
+            percentage=0;
             swValue(num1,num2);
             len=arithemtics(num1,num2);
 
@@ -196,9 +229,39 @@ int main()
             }
             else
                 printf("\n");
+
+            if(STATS==1)
+            {
+                if(len%2==0)
+                {
+                    percentage=(sameness/((float)len/2))*100;
+                    printf("%.2f%% is similar\n\n",percentage);
+                }
+                else
+                {
+                    percentage=((sameness+1)/(((float)len+1)/2))*100;
+                    printf("%.2f%% is similar\n\n",percentage);
+                }
+
+                if(percentage>=maxPercentage)
+                {
+                    maxPercentage=percentage;
+                    for(int e=0;e<PARAM;e++)
+                        maxP[e]=num1[e];
+                }
+            }
         }
 
-        printf("\n\nNumber of palindromes found: %d\n\nWanna try again? 1-yes 0-no\n\n",paliCount);
+        printf("\n\nNumber of palindromes found: %d",paliCount);
+        if(STATS==1)
+        {
+            printf("\nThe longest palindrome or with most accuracy is:\n");
+            for(int q=0;q<PARAM;q++)
+                if(maxP[q]!=-5)
+                    printf("%d",maxP[q]);
+                printf("\n%.2f%% accuracy\n",maxPercentage);
+        }
+        printf("\n\nWanna try again? 1-yes 0-no\n\n");
         while((g=getchar())!='1' && g!='0')
         {}
         getchar();
@@ -213,7 +276,3 @@ int main()
     //printf("%d",j);
     return 0;
 }
-
-
-
-//1848942894949849498419941988498464646436783848649846984
